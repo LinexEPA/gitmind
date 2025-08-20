@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>🌸 護理臨床推理 - 九宮格看板</title>
+<title>🌸 護理臨床推理看板</title>
 <style>
   body{margin:0;padding:20px;background:linear-gradient(180deg,#fff5f7,#f4fbff);
        font-family:ui-rounded,"PingFang TC","Noto Sans TC",system-ui,-apple-system,sans-serif;color:#2b2f36}
@@ -17,33 +17,44 @@
         display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:18px;line-height:1.2}
   .center{background:linear-gradient(180deg,#fff1f7,#eef9ff);border:2px solid #ff9ac2;font-weight:700}
   .muted{color:#7a7f87;font-size:13px;text-align:center;margin-top:8px}
+  .empty{color:#9aa0a6;text-align:center;padding:24px 8px}
+  .bar{max-width:560px;margin:10px auto 0;text-align:center}
+  .btn{display:inline-block;margin:6px;background:#4b7bec;color:#fff;border:0;border-radius:10px;font-size:14px;padding:8px 12px;cursor:pointer}
 </style>
 </head>
 <body>
-  <h1 id="h1">🌸 護理臨床推理 - 九宮格看板</h1>
+  <h1 id="h1">🌸 護理臨床推理看板</h1>
   <div class="card">
     <div class="title">
       <span class="pill" id="topicPill">主題</span>
       <span class="pill" id="groupPill">組別</span>
     </div>
-    <div class="grid" id="grid"></div>
+    <div id="content">
+      <div class="grid" id="grid"></div>
+      <div class="muted">此頁每 5 秒自動更新。</div>
+    </div>
   </div>
-  <div class="muted">此頁每 5 秒自動更新。</div>
+
+  <div class="bar">
+    <button id="refreshBtn" class="btn">↻ 立即更新</button>
+  </div>
 
 <script>
-  // ✅ 同一支 Apps Script /exec
-  const API_URL = 'https://script.google.com/macros/s/AKfycbxo0KhEWoVMpfATaF760teggaREGWtaAoCAfPc039fpHTAjVSID7e-nUyl8Npi2yDhQ/exec';
+  // ⛳ 換成你的 Apps Script /exec（與 index.html 同一條）
+  const API_URL = 'https://script.google.com/macros/s/你的_EXEC_網址/exec';
 
   const sp = new URLSearchParams(location.search);
   const topic = sp.get('topic') || '未命名主題';
   const group = sp.get('group') || '1';
 
-  document.getElementById('h1').textContent = `🌸 護理臨床推理 - 九宮格看板：${topic}`;
+  document.getElementById('h1').textContent = `🌸 護理臨床推理看板：${topic}`;
   document.getElementById('topicPill').textContent = `主題：${topic}`;
   document.getElementById('groupPill').textContent = `組別：${group}`;
-  const gridEl = document.getElementById('grid');
 
-  // JSONP 取資料（避免 CORS）
+  const gridEl = document.getElementById('grid');
+  const contentEl = document.getElementById('content');
+
+  // JSONP（避免 CORS）
   function jsonp(url){
     return new Promise((resolve,reject)=>{
       const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*1000);
@@ -58,19 +69,38 @@
   function cell(txt, center=false){
     const d=document.createElement('div');
     d.className='cell'+(center?' center':'');
-    d.textContent = center ? `🎯 ${topic}` : (txt||'…'); return d;
+    d.textContent = center ? `🎯 ${topic}` : (txt||'');
+    return d;
+  }
+
+  function showEmpty(){
+    contentEl.innerHTML = `<div class="empty">目前尚無資料（主題「${topic}」第 ${group} 組）。<br>請同組在回填頁送出後再試一次。</div>`;
   }
 
   async function load(){
     try{
-      const url = `${API_URL}?action=getLatestGrid&topic=${encodeURIComponent(topic)}&group=${encodeURIComponent(group)}`;
-      const res = await jsonp(url);                   // { ok:true, grid:[...] }
-      const cells = (res && res.ok) ? res.grid : Array(9).fill('');
-      gridEl.innerHTML='';
-      for (let i=0;i<9;i++) gridEl.appendChild(cell(i===4 ? `🎯 ${topic}` : (cells[i]||''), i===4));
-    }catch(e){ console.error(e); }
+      // ✅ 帶上 strict=1，後端就不會用「只看 group」的退一步邏輯
+      const url = `${API_URL}?action=getLatestGrid&topic=${encodeURIComponent(topic)}&group=${encodeURIComponent(group)}&strict=1`;
+      const res = await jsonp(url); // { ok:true, grid:[...] }
+      const cells = (res && res.ok && Array.isArray(res.grid)) ? res.grid : [];
+      const isAllEmpty = cells.length===9 && cells.every(v => (v===null || v===undefined || String(v).trim()===''));
+      if (cells.length!==9 || isAllEmpty){
+        showEmpty();
+        return;
+      }
+      // 有資料 → 渲染九宮格
+      contentEl.innerHTML = `<div class="grid" id="grid"></div><div class="muted">此頁每 5 秒自動更新。</div>`;
+      const g = document.getElementById('grid');
+      for (let i=0;i<9;i++) g.appendChild(cell(i===4 ? `🎯 ${topic}` : (cells[i]||''), i===4));
+    }catch(e){
+      console.error(e);
+    }
   }
-  load(); setInterval(load, 5000);
+
+  load();
+  const timer = setInterval(load, 5000);
+  document.getElementById('refreshBtn').addEventListener('click', load);
+  window.addEventListener('beforeunload', ()=>clearInterval(timer));
 </script>
 </body>
 </html>

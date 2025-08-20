@@ -1,28 +1,69 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>九宮格回填</title>
-  <style>
-    body { font-family: system-ui, -apple-system, 'Noto Sans TC', sans-serif; padding: 16px; }
-    .tag { display:inline-block; padding:4px 8px; background:#eef; border-radius:6px; margin-bottom:12px; }
-    .grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; }
-    textarea { width:100%; height:70px; padding:8px; box-sizing:border-box; }
-    button { padding:10px 16px; border:0; border-radius:8px; background:#4b7bec; color:#fff; font-size:16px; }
-    .hint { color:#666; font-size:14px; margin:8px 0 16px; }
-    .ok { color:#2f9e44; margin-top:10px; }
-    .err { color:#c92a2a; margin-top:10px; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>九宮格回填（手機版）</title>
+<style>
+  :root{
+    --bg:#fff8fb; --card:#ffffff; --ink:#2b2f36; --muted:#6b7280;
+    --accent:#ff9ac2; --grid:#e9e9ef; --btn:#4b7bec;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:linear-gradient(180deg,#fff5f9,#f6fbff); color:var(--ink);
+       font-family: ui-rounded, "PingFang TC","Noto Sans TC", system-ui, -apple-system, sans-serif;}
+  .wrap{max-width:900px; margin:0 auto; padding:16px}
+  h1{font-size:22px; margin:4px 0 12px}
+  .row{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:8px}
+  .badge{background:#fff; border:1px solid #ffd9ea; padding:8px 10px; border-radius:10px; font-size:14px}
+  select{font-size:16px; padding:8px 10px; border-radius:10px; border:1px solid #dfe3ea; background:#fff}
+  .groups{display:flex; gap:8px; flex-wrap:wrap}
+  .gbtn{flex:1; min-width:60px; text-align:center; padding:10px 0; border-radius:12px;
+        border:2px solid #dfe7ff; background:#fff; font-size:16px}
+  .gbtn.active{background:#e6f0ff; border-color:#bcd3ff}
+  .hint{color:var(--muted); font-size:14px; margin:10px 2px 14px}
+  .grid{display:grid; grid-template-columns:1fr; gap:10px}
+  @media(min-width:640px){ .grid{grid-template-columns:repeat(3,1fr);} }
+  textarea{width:100%; min-height:86px; padding:10px; font-size:16px; border-radius:12px; border:1px solid var(--grid)}
+  .btn{display:inline-block; margin-top:14px; background:var(--btn); color:#fff; border:0; border-radius:12px;
+       font-size:18px; padding:14px 18px; width:100%}
+  .btn[disabled]{opacity:.5}
+  .toast{margin-top:10px; font-size:15px}
+  .ok{color:#2f9e44} .err{color:#c92a2a}
+  .head{background:#fff; border:2px solid #ffe2ef; border-radius:16px; padding:10px 12px; margin-bottom:10px}
+  .pill{display:inline-block; padding:6px 12px; border-radius:999px; background:linear-gradient(90deg,#ffd9ec,#c7eeff);
+        border:1px solid #ffd9ec; font-size:13px}
+</style>
 </head>
 <body>
-  <h2>九宮格回填</h2>
-  <div class="tag">主題：<b><?= topic || '（請用含 topic 的 QR 開啟）' ?></b></div>
-  <div class="tag">組別：<b><?= group_id || '（請用含 group 的 QR 開啟）' ?></b></div>
-  <div class="hint">填寫順序：從 <b>12 點方向</b>開始，<b>順時針</b>依序填入 1→9 格（中心題目已由主題提供）。</div>
+<div class="wrap">
+  <h1>九宮格回填（手機版）</h1>
 
-  <div class="grid">
-    <!-- a1..a9 -->
+  <div class="head">
+    <div class="row">
+      <span class="pill">主題</span>
+      <span id="topicLabel" class="badge"></span>
+      <select id="topicSelect" style="display:none">
+        <option value="">請選擇主題</option>
+        <option>血糖監測</option>
+        <option>輸血</option>
+        <option>利尿劑</option>
+        <option>抗生素</option>
+        <option>氧氣</option>
+      </select>
+    </div>
+    <div class="row">
+      <span class="pill">組別</span>
+      <span id="groupLabel" class="badge"></span>
+    </div>
+    <div class="groups" id="groupBtns">
+      <!-- 1~5 組按鈕 -->
+    </div>
+  </div>
+
+  <div class="hint">填寫順序：從 <b>12 點方向</b>開始，<b>順時針</b>依序填入 1→9 格（中心題目由主題提供）。</div>
+
+  <div class="grid" id="grid">
     <textarea id="a1" placeholder="a1（12點）"></textarea>
     <textarea id="a2" placeholder="a2"></textarea>
     <textarea id="a3" placeholder="a3"></textarea>
@@ -34,34 +75,103 @@
     <textarea id="a9" placeholder="a9"></textarea>
   </div>
 
-  <p class="hint">小提醒：每格 1~2 個關鍵詞最清楚（例如：監測血糖 / 注意飲食）。</p>
+  <button id="submitBtn" class="btn" disabled>送出</button>
+  <div id="toast" class="toast"></div>
 
-  <button onclick="submit()">送出</button>
-  <div id="msg"></div>
+  <div class="hint">小提醒：每格 1–2 個關鍵詞最清楚（例如：監測血糖 / 注意飲食）。</div>
+</div>
 
 <script>
-  const topic = '<?= topic ?>';
-  const group_id = '<?= group_id ?>';
+  // ❶ 把你的 Apps Script Web App /exec 網址填在這裡
+  const BACKEND_URL = 'https://script.google.com/macros/s/你的DEPLOY_ID/exec';
 
-  function submit() {
-    const cells = [];
-    for (let i=1;i<=9;i++) {
-      cells.push(document.getElementById('a'+i).value.trim());
+  // 讀取 URL 參數
+  const sp = new URLSearchParams(location.search);
+  let topic = sp.get('topic') || '';
+  let group_id = sp.get('group') || '';
+
+  // UI 元件
+  const topicLabel = document.getElementById('topicLabel');
+  const topicSelect = document.getElementById('topicSelect');
+  const groupLabel = document.getElementById('groupLabel');
+  const groupBtns = document.getElementById('groupBtns');
+  const submitBtn = document.getElementById('submitBtn');
+  const toast = document.getElementById('toast');
+
+  // 建立 1~5 組按鈕
+  for (let i=1;i<=5;i++){
+    const b = document.createElement('button');
+    b.type='button'; b.className='gbtn'; b.textContent=`第 ${i} 組`;
+    if (group_id==i.toString()) b.classList.add('active');
+    b.addEventListener('click', ()=>{
+      group_id = i.toString();
+      // 按鈕高亮
+      [...groupBtns.children].forEach(c=>c.classList.remove('active'));
+      b.classList.add('active');
+      groupLabel.textContent = `第 ${group_id} 組`;
+      checkReady();
+    });
+    groupBtns.appendChild(b);
+  }
+
+  // 主題顯示邏輯：URL 有 topic → 顯示標籤；沒有 → 顯示下拉選單
+  function setTopicUI(){
+    if (topic){
+      topicLabel.textContent = topic;
+      topicLabel.style.display='inline-block';
+      topicSelect.style.display='none';
+    }else{
+      topicLabel.style.display='none';
+      topicSelect.style.display='inline-block';
+      topicSelect.addEventListener('change', ()=>{
+        topic = topicSelect.value;
+        checkReady();
+      });
     }
-    if (!topic || !group_id) {
-      document.getElementById('msg').innerHTML = '<div class="err">缺少主題或組別參數。</div>';
+  }
+
+  function checkReady(){
+    submitBtn.disabled = !(topic && group_id);
+  }
+
+  // 送出
+  submitBtn.addEventListener('click', async ()=>{
+    const cells = [];
+    for (let i=1;i<=9;i++){ cells.push(document.getElementById('a'+i).value.trim()); }
+
+    if (!topic || !group_id){
+      toast.innerHTML = '<span class="err">請先選主題與組別</span>';
       return;
     }
-    google.script.run.withSuccessHandler(res => {
-      if (res && res.ok) {
-        document.getElementById('msg').innerHTML = '<div class="ok">送出成功！請等待老師看板更新。</div>';
-      } else {
-        document.getElementById('msg').innerHTML = '<div class="err">送出失敗。</div>';
+
+    // 將資料送到 Apps Script（你那端用 doPost 接收）
+    try{
+      submitBtn.disabled = true;
+      toast.textContent = '送出中…';
+      const res = await fetch(BACKEND_URL, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'submitGrid', topic, group_id, cells })
+      });
+      const json = await res.json();
+      if (json && json.ok){
+        toast.innerHTML = '<span class="ok">送出成功！</span>';
+        // 清空欄位（可選）
+        // for (let i=1;i<=9;i++){ document.getElementById('a'+i).value=''; }
+      }else{
+        toast.innerHTML = `<span class="err">送出失敗</span>`;
       }
-    }).withFailureHandler(err => {
-      document.getElementById('msg').innerHTML = `<div class="err">錯誤：${err.message}</div>`;
-    }).submitGrid({ topic, group_id, cells });
-  }
+    }catch(err){
+      toast.innerHTML = `<span class="err">錯誤：${err.message}</span>`;
+    }finally{
+      checkReady();
+    }
+  });
+
+  // 初始化
+  setTopicUI();
+  groupLabel.textContent = group_id ? `第 ${group_id} 組` : '未選擇';
+  checkReady();
 </script>
 </body>
 </html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>主題看板合集（五組同時）</title>
+<style>
+  body{font-family:"Microsoft JhengHei","PingFang TC",system-ui,sans-serif;margin:0;background:linear-gradient(180deg,#fff0f5,#f4fbff)}
+  header{padding:16px 14px;text-align:center}
+  h1{margin:4px 0 10px;color:#d63384;font-size:22px}
+  .bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  select,button{padding:8px 12px;border-radius:10px;border:1px solid #dfe3ea;background:#fff;font-size:16px}
+  button{background:#4a90e2;color:#fff;border:0;cursor:pointer}
+  .grid{display:grid;grid-template-columns:1fr;gap:10px;padding:12px;max-width:1400px;margin:0 auto}
+  @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+  .card{background:#fff;border:2px solid #ffe2ef;border-radius:16px;box-shadow:0 10px 20px rgba(255,160,190,.18);overflow:hidden}
+  .card header{background:linear-gradient(90deg,#ffd9ec,#c7eeff);padding:10px 12px;text-align:left}
+  .card header b{color:#2b2f36}
+  iframe{width:100%;height:420px;border:0}
+  .muted{color:#6b7280;font-size:13px;text-align:center;margin:6px 0 14px}
+</style>
+</head>
+<body>
+  <header>
+    <h1>主題看板合集（五組同時）</h1>
+    <div class="bar">
+      <label>主題</label>
+      <select id="topic">
+        <option value="血糖監測">血糖監測</option>
+        <option value="禁食">禁食</option>
+        <option value="翻身">翻身</option>
+        <option value="安眠藥">安眠藥</option>
+        <option value="抽痰">抽痰</option>
+      </select>
+      <button id="showBtn">顯示五組</button>
+      <button id="openLauncher">開單一組（用現有 Launcher）</button>
+    </div>
+    <div class="muted">提示：每個內嵌看板皆為你的 Dashboard.html（會自動每 5 秒更新）。</div>
+  </header>
+
+  <main class="grid" id="wall"></main>
+
+<script>
+  // 解析 URL 預設主題
+  const sp = new URLSearchParams(location.search);
+  const topicSel = document.getElementById('topic');
+  if (sp.get('topic')) topicSel.value = sp.get('topic');
+
+  const wall = document.getElementById('wall');
+  const baseDashboard = "Dashboard.html"; // 使用相對路徑，與現有檔案放同資料夾
+
+  function renderAll() {
+    const t = topicSel.value;
+    wall.innerHTML = '';
+    for (let g = 1; g <= 5; g++) {
+      const card = document.createElement('section');
+      card.className = 'card';
+      card.innerHTML = `
+        <header><b>主題：</b>${t}　<b>組別：</b>${g}</header>
+        <iframe loading="lazy" src="${baseDashboard}?topic=${encodeURIComponent(t)}&group=${g}"></iframe>
+      `;
+      wall.appendChild(card);
+    }
+  }
+
+  document.getElementById('showBtn').addEventListener('click', renderAll);
+
+  // 直接用你現成的 Launcher（不改它）
+  document.getElementById('openLauncher').addEventListener('click', () => {
+    // 以同一 repo 的 Launcher.html 為基礎；如檔名不同自行調整
+    const launcherUrl = "Launcher.html";
+    window.open(launcherUrl, "_blank");
+  });
+
+  // 若帶了 ?topic=xxx，載入就直接顯示
+  if (sp.get('topic')) renderAll();
+</script>
+</body>
+</html>

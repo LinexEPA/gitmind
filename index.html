@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>九宮格回填</title>
+  <style>
+    body { font-family: system-ui, -apple-system, 'Noto Sans TC', sans-serif; padding: 16px; }
+    .tag { display:inline-block; padding:4px 8px; background:#eef; border-radius:6px; margin-bottom:12px; }
+    .grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; }
+    textarea { width:100%; height:70px; padding:8px; box-sizing:border-box; }
+    button { padding:10px 16px; border:0; border-radius:8px; background:#4b7bec; color:#fff; font-size:16px; }
+    .hint { color:#666; font-size:14px; margin:8px 0 16px; }
+    .ok { color:#2f9e44; margin-top:10px; }
+    .err { color:#c92a2a; margin-top:10px; }
+  </style>
+</head>
+<body>
+  <h2>九宮格回填</h2>
+  <div class="tag">主題：<b><?= topic || '（請用含 topic 的 QR 開啟）' ?></b></div>
+  <div class="tag">組別：<b><?= group_id || '（請用含 group 的 QR 開啟）' ?></b></div>
+  <div class="hint">填寫順序：從 <b>12 點方向</b>開始，<b>順時針</b>依序填入 1→9 格（中心題目已由主題提供）。</div>
+
+  <div class="grid">
+    <!-- a1..a9 -->
+    <textarea id="a1" placeholder="a1（12點）"></textarea>
+    <textarea id="a2" placeholder="a2"></textarea>
+    <textarea id="a3" placeholder="a3"></textarea>
+    <textarea id="a4" placeholder="a4"></textarea>
+    <textarea id="a5" placeholder="a5"></textarea>
+    <textarea id="a6" placeholder="a6"></textarea>
+    <textarea id="a7" placeholder="a7"></textarea>
+    <textarea id="a8" placeholder="a8"></textarea>
+    <textarea id="a9" placeholder="a9"></textarea>
+  </div>
+
+  <p class="hint">小提醒：每格 1~2 個關鍵詞最清楚（例如：監測血糖 / 注意飲食）。</p>
+
+  <button onclick="submit()">送出</button>
+  <div id="msg"></div>
+
+<script>
+  const topic = '<?= topic ?>';
+  const group_id = '<?= group_id ?>';
+
+  function submit() {
+    const cells = [];
+    for (let i=1;i<=9;i++) {
+      cells.push(document.getElementById('a'+i).value.trim());
+    }
+    if (!topic || !group_id) {
+      document.getElementById('msg').innerHTML = '<div class="err">缺少主題或組別參數。</div>';
+      return;
+    }
+    google.script.run.withSuccessHandler(res => {
+      if (res && res.ok) {
+        document.getElementById('msg').innerHTML = '<div class="ok">送出成功！請等待老師看板更新。</div>';
+      } else {
+        document.getElementById('msg').innerHTML = '<div class="err">送出失敗。</div>';
+      }
+    }).withFailureHandler(err => {
+      document.getElementById('msg').innerHTML = `<div class="err">錯誤：${err.message}</div>`;
+    }).submitGrid({ topic, group_id, cells });
+  }
+</script>
+</body>
+</html>

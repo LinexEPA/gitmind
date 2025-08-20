@@ -3,80 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>護理臨床推理 🌸 一起來實果~</title>
+  <title>護理臨床推理 🌸 九宮格回填</title>
   <style>
-    body {
-      font-family: "Microsoft JhengHei", sans-serif;
-      background: #fff0f5;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-    }
-    h2 {
-      color: #d63384;
-      margin: 20px 0;
-    }
-    .box {
-      background: white;
-      margin: 15px auto;
-      padding: 20px;
-      border-radius: 12px;
-      max-width: 650px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    select, button {
-      padding: 8px 12px;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-      margin: 8px;
-      font-size: 16px;
-    }
-    .groupBtn {
-      display: inline-block;
-      margin: 4px;
-      padding: 10px 20px;
-      border: 1px solid #aaa;
-      border-radius: 8px;
-      cursor: pointer;
-      background: #f8f9fa;
-    }
-    .groupBtn.active {
-      background: #d63384;
-      color: white;
-      border-color: #d63384;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 20px;
-    }
-    textarea {
-      width: 100%;
-      height: 80px;
-      resize: none;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      padding: 6px;
-      font-size: 14px;
-    }
-    .submit {
-      margin-top: 20px;
-      background: #4a90e2;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 20px;
-      font-size: 18px;
-      cursor: pointer;
-    }
-    .toast { margin-top:10px; font-size:14px; }
-    .ok { color: green; }
-    .err { color: red; }
+    body{font-family:"Microsoft JhengHei","PingFang TC",system-ui,sans-serif;margin:0;text-align:center;background:linear-gradient(180deg,#fff0f5,#f4fbff)}
+    h2{color:#d63384;margin:18px 0}
+    .box{background:#fff;margin:12px auto;padding:16px;border-radius:14px;max-width:680px;box-shadow:0 6px 16px rgba(0,0,0,.08)}
+    label{display:inline-block;margin-right:6px;color:#555}
+    select,button{padding:8px 12px;border-radius:8px;border:1px solid #ddd;margin:6px;font-size:16px;background:#fff}
+    .groupBtns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:4px}
+    .groupBtn{padding:10px 18px;border:2px solid #dfe7ff;border-radius:12px;background:#fff;cursor:pointer}
+    .groupBtn.active{background:#e6f0ff;border-color:#bcd3ff}
+    .hint{color:#666;margin-top:6px;font-size:14px}
+    .grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}
+    @media(min-width:640px){.grid{grid-template-columns:repeat(3,1fr)}}
+    textarea{width:100%;height:86px;resize:none;border-radius:12px;border:1px solid #e4e7ee;padding:10px;font-size:15px}
+    .submit{margin-top:14px;background:#4a90e2;color:#fff;border:0;border-radius:12px;padding:14px 20px;font-size:18px;width:100%;cursor:pointer}
+    .submit[disabled]{opacity:.5;cursor:not-allowed}
+    .toast{margin-top:10px;font-size:15px}
+    .ok{color:#2f9e44}.err{color:#c92a2a}
+    .link{display:block;margin-top:10px}
   </style>
 </head>
 <body>
-  <h2>護理臨床推理（一起來實果~）</h2>
+  <h2>護理臨床推理 🌸 九宮格回填</h2>
+
   <div class="box">
     <div>
       <label>主題</label>
@@ -84,10 +34,12 @@
         <option value="">請選擇</option>
         <option value="血糖監測">血糖監測</option>
         <option value="輸血安全">輸血安全</option>
-        <option value="藥物給藥">藥物給藥</option>
-        <option value="交班重點">交班重點</option>
+        <option value="利尿劑">利尿劑</option>
+        <option value="抗生素">抗生素</option>
+        <option value="氧氣">氧氣</option>
       </select>
     </div>
+
     <div>
       <label>組別</label>
       <select id="groupSelect">
@@ -99,56 +51,88 @@
         <option value="5">第 5 組</option>
       </select>
     </div>
-    <div id="groupBtns">
-      <div class="groupBtn" data-g="1">第 1 組</div>
-      <div class="groupBtn" data-g="2">第 2 組</div>
-      <div class="groupBtn" data-g="3">第 3 組</div>
-      <div class="groupBtn" data-g="4">第 4 組</div>
-      <div class="groupBtn" data-g="5">第 5 組</div>
+
+    <div class="groupBtns" id="groupBtns">
+      <button type="button" class="groupBtn" data-g="1">第 1 組</button>
+      <button type="button" class="groupBtn" data-g="2">第 2 組</button>
+      <button type="button" class="groupBtn" data-g="3">第 3 組</button>
+      <button type="button" class="groupBtn" data-g="4">第 4 組</button>
+      <button type="button" class="groupBtn" data-g="5">第 5 組</button>
     </div>
-    <div style="margin-top:10px;color:#666;font-size:14px;">
-      填寫順序是 <b>九宮格實果畫面</b> 🌸
-    </div>
+
+    <div class="hint">填寫順序是<b>九宮格實果畫面喔~ </b></div>
+
     <div class="grid">
       <textarea id="a1" placeholder="1"></textarea>
       <textarea id="a2" placeholder="2"></textarea>
       <textarea id="a3" placeholder="3"></textarea>
       <textarea id="a4" placeholder="4"></textarea>
-      <textarea id="a5" placeholder="你的醫囑填這邊"></textarea>
+      <textarea id="a5" placeholder="請填入你的醫囑"></textarea>
       <textarea id="a6" placeholder="6"></textarea>
       <textarea id="a7" placeholder="7"></textarea>
       <textarea id="a8" placeholder="8"></textarea>
       <textarea id="a9" placeholder="9"></textarea>
     </div>
-    <button class="submit" id="submitBtn">送出</button>
-    <div class="toast" id="toast"></div>
-    <div style="margin-top:12px;">
-      <a id="goBoard" href="Dashboard.html" target="_blank">👉 前往看板</a>
-    </div>
+
+    <button id="submitBtn" class="submit" disabled>送出</button>
+    <div id="toast" class="toast"></div>
+    <a id="goBoard" class="link" target="_blank" rel="noopener">👉 送出後開啟看板</a>
   </div>
 
   <script>
-    // ⚠️ 記得換成你自己的 Apps Script 網址
-    const API_URL = 'https://script.google.com/macros/s/AKfycbxo0KhEWoVMpfATaF760teggaREGWtaAoCAfPc039fpHTAjVSID7e-nUyl8Npi2yDhQ/exec
-';
+    // ⚠️換成你的 Apps Script /exec
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxo0KhEWoVMpfATaF760teggaREGWtaAoCAfPc039fpHTAjVSID7e-nUyl8Npi2yDhQ/exec';
 
-    let group_id = "";
-
-    // 組別按鈕事件
-    document.querySelectorAll('.groupBtn').forEach(btn=>{
-      btn.onclick = ()=>{
-        document.querySelectorAll('.groupBtn').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        group_id = btn.dataset.g;
-        document.getElementById('groupSelect').value = group_id;
-      };
-    });
-
-    const sel = document.getElementById('topicSelect');
-    const groupSel = document.getElementById('groupSelect');
+    // 讀 URL 預設值
+    const sp = new URLSearchParams(location.search);
+    const topicSelect = document.getElementById('topicSelect');
+    const groupSelect = document.getElementById('groupSelect');
+    const groupBtnsWrap = document.getElementById('groupBtns');
     const submitBtn = document.getElementById('submitBtn');
     const toast = document.getElementById('toast');
     const goBoard = document.getElementById('goBoard');
+
+    let topic = sp.get('topic') || '';
+    let group_id = sp.get('group') || '';
+
+    if (topic) topicSelect.value = topic;
+    if (group_id) {
+      groupSelect.value = group_id;
+      syncButtons(group_id);
+    }
+
+    // 主題/組別變更 → 更新狀態
+    topicSelect.addEventListener('change', ()=>{ topic = topicSelect.value; updateReady(); updateBoardLink(); });
+    groupSelect.addEventListener('change', ()=>{
+      group_id = groupSelect.value;
+      syncButtons(group_id);
+      updateReady(); updateBoardLink();
+    });
+
+    // 組別按鈕點擊
+    groupBtnsWrap.querySelectorAll('.groupBtn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        group_id = btn.dataset.g;
+        groupSelect.value = group_id;             // 同步下拉
+        syncButtons(group_id);
+        updateReady(); updateBoardLink();
+      });
+    });
+
+    function syncButtons(g){
+      groupBtnsWrap.querySelectorAll('.groupBtn').forEach(b=>{
+        b.classList.toggle('active', b.dataset.g === String(g));
+      });
+    }
+    function updateReady(){
+      submitBtn.disabled = !(topicSelect.value && groupSelect.value);
+    }
+    function updateBoardLink(){
+      const t = encodeURIComponent(topicSelect.value || '');
+      const g = encodeURIComponent(groupSelect.value || '');
+      goBoard.href = `Dashboard.html?topic=${t}&group=${g}`;
+    }
+    updateReady(); updateBoardLink();
 
     // JSONP 工具
     function jsonp(url){
@@ -156,47 +140,41 @@
         const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*1000);
         const s=document.createElement('script');
         window[cb]=(data)=>{ resolve(data); delete window[cb]; s.remove(); };
-        s.onerror=()=>{ reject(new Error('JSONP失敗')); delete window[cb]; s.remove(); };
+        s.onerror=()=>{ reject(new Error('JSONP 失敗')); delete window[cb]; s.remove(); };
         s.src = url + (url.includes('?')?'&':'?') + 'callback=' + cb;
         document.body.appendChild(s);
       });
     }
 
-    // 送出
-    submitBtn.onclick = async ()=>{
-      const t = (sel.value || "").trim();
-      const g = group_id || groupSel.value;
+    // 送出（JSONP → 失敗改影像 Beacon）
+    submitBtn.addEventListener('click', async ()=>{
+      const t = (topicSelect.value || '').trim();
+      const g = (groupSelect.value || '').trim();
       if (!t || !g){ toast.innerHTML='<span class="err">請先選主題與組別</span>'; return; }
 
       const qs = new URLSearchParams();
       qs.set('action','submitGrid');
       qs.set('topic', t);
       qs.set('group', g);
-      for (let i=1;i<=9;i++){
-        qs.set('a'+i, document.getElementById('a'+i).value.trim());
-      }
+      for (let i=1;i<=9;i++) qs.set('a'+i, document.getElementById('a'+i).value.trim());
       const submitURL = `${API_URL}?${qs.toString()}`;
 
       try{
-        submitBtn.disabled = true;
-        toast.textContent = '送出中…';
+        submitBtn.disabled = true; toast.textContent='送出中…';
         const res = await jsonp(submitURL);
         if (res && res.ok){
-          toast.innerHTML = '<span class="ok">送出成功！</span>';
-        } else {
-          throw new Error('JSONP回應非ok');
-        }
+          toast.innerHTML='<span class="ok">送出成功！</span>';
+        } else throw new Error('JSONP 非 ok');
       }catch(e){
-        // 備援：用隱形圖片
-        const img = new Image();
+        const img = new Image();                   // 備援：影像 Beacon
         img.src = submitURL + '&_t=' + Date.now();
-        await new Promise(r => setTimeout(r, 600));
-        toast.innerHTML = '<span class="ok">送出成功！（備援）</span>';
+        await new Promise(r=>setTimeout(r,600));
+        toast.innerHTML='<span class="ok">送出成功！（備援）</span>';
       }finally{
         submitBtn.disabled = false;
-        goBoard.href = `Dashboard.html?topic=${encodeURIComponent(t)}&group=${encodeURIComponent(g)}`;
+        updateBoardLink();
       }
-    };
+    });
   </script>
 </body>
 </html>

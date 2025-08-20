@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title> <b>護理臨床推理~</b> 大家一起來賓果 </title>
+  <style>
+    body {
+      font-family: "Noto Sans TC", sans-serif;
+      background: #fdf6f6;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #ff6b81;
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .cell {
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      padding: 20px;
+      font-size: 1.1em;
+      color: #333;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+    }
+    .cell.filled {
+      background: #ffe6eb;
+      border: 2px solid #ff6b81;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="topicTitle">九宮格賓果</h1>
+  <div class="grid" id="bingoGrid">
+    <!-- 動態生成 -->
+  </div>
+
+  <script>
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyqRLiFavnZIHCpmrX1CvN_gVjOhkgPw1OSX2bno7GX4zVZzj3zoHdGruIPJygRZtPI/exec;
+    
+    // 取得網址參數 ?topic=血糖監測&group=1
+    const urlParams = new URLSearchParams(window.location.search);
+    const topic = urlParams.get("topic") || "未命名主題";
+    const group = urlParams.get("group") || "1";
+    document.getElementById("topicTitle").innerText = "主題：" + topic;
+
+    // 從後端抓取資料
+    async function loadGrid() {
+      try {
+        let res = await fetch(`${BACKEND_URL}?topic=${topic}&group=${group}`);
+        let data = await res.json();
+
+        const grid = document.getElementById("bingoGrid");
+        grid.innerHTML = "";
+
+        for (let i = 0; i < 9; i++) {
+          let cell = document.createElement("div");
+          cell.className = "cell";
+          if (data[i]) {
+            cell.classList.add("filled");
+            cell.innerText = data[i];
+          } else {
+            cell.innerText = "等待填寫";
+          }
+          grid.appendChild(cell);
+        }
+      } catch (err) {
+        alert("載入失敗：" + err);
+      }
+    }
+
+    loadGrid();
+    // 每30秒更新一次
+    setInterval(loadGrid, 30000);
+  </script>
+</body>
+</html>

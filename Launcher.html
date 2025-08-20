@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>看板總控台 Launcher</title>
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      background: #f7faff;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      color: #3366cc;
+      margin-bottom: 20px;
+    }
+    select, button {
+      font-size: 18px;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .preview {
+      margin-top: 30px;
+      border: 2px solid #ccc;
+      width: 90%;
+      height: 600px;
+    }
+  </style>
+</head>
+<body>
+  <h1>看板總控台</h1>
+
+  <label for="topic">選擇主題：</label>
+  <select id="topic">
+    <option value="">--請選擇--</option>
+    <option value="血糖監測">血糖監測</option>
+    <option value="禁食">禁食</option>
+    <option value="翻身">翻身</option>
+    <option value="安眠藥">安眠藥</option>
+    <option value="抽痰">抽痰</option>
+  </select>
+
+  <label for="group">選擇組別：</label>
+  <select id="group">
+    <option value="">--請選擇--</option>
+    <option value="1">第1組</option>
+    <option value="2">第2組</option>
+    <option value="3">第3組</option>
+    <option value="4">第4組</option>
+    <option value="5">第5組</option>
+  </select>
+
+  <br>
+  <button onclick="openDashboard()">開啟看板</button>
+
+  <iframe id="preview" class="preview"></iframe>
+
+  <script>
+    function openDashboard() {
+      const topic = document.getElementById('topic').value;
+      const group = document.getElementById('group').value;
+
+      if (!topic || !group) {
+        alert("請先選擇主題與組別！");
+        return;
+      }
+
+      // 這裡換成你自己 Github Pages 的專案路徑
+      const baseUrl = "https://tc000013787.github.io/gitmind/Dashboard.html";
+      const url = `${baseUrl}?topic=${encodeURIComponent(topic)}&group=${group}`;
+
+      document.getElementById('preview').src = url;
+    }
+  </script>
+</body>
+</html>

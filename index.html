@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title> 護理臨床推理（一起來賓果）</title>
+<title>🌸 護理臨床推理（一起來賓果~）</title>
 <style>
   :root{
     --bg1:#fff5f9; --bg2:#f4fbff; --card:#ffffff; --ink:#2b2f36;
@@ -39,7 +39,7 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🌸 護理臨床推理（一起來賓果）</h1>
+  <h1>🌸 護理臨床推理（一起來賓果~）</h1>
 
   <div class="card">
     <div class="row">
@@ -64,27 +64,27 @@
   <div class="hint">填寫順序：會是 <b>螢幕上看到的九宮格畫面</b>喔～</div>
 
   <div class="grid">
-    <textarea id="a1"  placeholder="a1"></textarea>
-    <textarea id="a2"  placeholder="a2"></textarea>
-    <textarea id="a3"  placeholder="a3"></textarea>
-    <textarea id="a4"  placeholder="a4"></textarea>
-    <textarea id="a5"  placeholder="填上小組的題目"></textarea>
-    <textarea id="a6"  placeholder="a6"></textarea>
-    <textarea id="a7"  placeholder="a7"></textarea>
-    <textarea id="a8"  placeholder="a8"></textarea>
-    <textarea id="a9"  placeholder="a9"></textarea>
+    <textarea id="a1" placeholder="a1（12點）"></textarea>
+    <textarea id="a2" placeholder="a2"></textarea>
+    <textarea id="a3" placeholder="a3"></textarea>
+    <textarea id="a4" placeholder="a4"></textarea>
+    <textarea id="a5" placeholder="這邊填上小組的題目"></textarea>
+    <textarea id="a6" placeholder="a6"></textarea>
+    <textarea id="a7" placeholder="a7"></textarea>
+    <textarea id="a8" placeholder="a8"></textarea>
+    <textarea id="a9" placeholder="a9"></textarea>
   </div>
 
   <button id="submitBtn" class="btn" disabled>送出</button>
   <a id="goBoard" class="link" target="_blank" rel="noopener">👉 送出後開啟看板</a>
   <div id="toast" class="toast"></div>
 
-  <div class="hint">小提醒：每格填入 1個護理臨床關鍵即可。</div>
+  <div class="hint">小提醒：每格 1–2 個護理臨床關鍵即可。</div>
 </div>
 
 <script>
-  // ① 把這裡換成你部署好的 Apps Script Web App /exec（同一支，寫入與讀取都在這裡）
-  const API_URL = 'https://script.google.com/macros/s/AKfycbzk19tD47ulOi8N9FGQSBbecd2n3_pAbtcsEKeW05-zfH0g2KyaR5_CTksbsh3Lh4Gt/exec';
+  // ⛳ 把這裡換成「同一支」Apps Script Web App /exec（writer+reader 都走它）
+  const API_URL = 'https://script.google.com/macros/s/AKfycbwLIX201A97awOAKs9AH5J0z8W3_csE0FvkDoslK6mM8IHt1Rh0SUCBgOvan6eKSm0/exec';
 
   // 讀 URL 預設值（可用 ?topic=...&group=... 預先帶入）
   const sp = new URLSearchParams(location.search);
@@ -138,32 +138,29 @@
     submitBtn.disabled = !(t && group_id);
   }
 
-  // 送出（用 FormData + no-cors：避免瀏覽器預檢 CORS）
+  // 送出（用 FormData；不自設 headers，避免預檢）
   submitBtn.addEventListener('click', async ()=>{
     const t = topic || sel.value;
     if (!t || !group_id){ toast.innerHTML='<span class="err">請先選主題與組別</span>'; return; }
 
-    const cells = [];
-    for (let i=1;i<=9;i++){ cells.push(document.getElementById('a'+i).value.trim()); }
+    const fd = new FormData();
+    fd.append('action','submitGrid');
+    fd.append('topic', t);
+    fd.append('group_id', group_id);
+    for (let i=1;i<=9;i++){
+      const el = document.getElementById('a'+i);
+      fd.append('a'+i, (el ? el.value.trim() : ''));
+    }
 
-    try {
+    try{
       submitBtn.disabled = true;
       toast.textContent = '送出中…';
-
-      const fd = new FormData();
-      fd.append('action','submitGrid');
-      fd.append('topic', t);
-      fd.append('group_id', group_id);
-      for (let i=1;i<=9;i++) fd.append('a'+i, cells[i-1]);
-
-      // 不設定 headers、使用 no-cors，讓瀏覽器直接送出
-      await fetch(API_URL, { method:'POST', body: fd, mode:'no-cors' });
-
-      toast.innerHTML = '<span class="ok">送出成功！請切到看板頁查看。</span>';
+      await fetch(API_URL, { method:'POST', body: fd }); // ← 不要自設 headers
+      toast.innerHTML = '<span class="ok">送出成功！</span>';
       goBoard.href = `Dashboard.html?topic=${encodeURIComponent(t)}&group=${encodeURIComponent(group_id)}`;
-    } catch (err) {
+    }catch(err){
       toast.innerHTML = `<span class="err">錯誤：${err.message}</span>`;
-    } finally {
+    }finally{
       submitBtn.disabled = false;
     }
   });

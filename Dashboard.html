@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>護理臨床推理-九宮格看板</title>
+<title>🌸 護理臨床推理 - 九宮格看板</title>
 <style>
   body{margin:0;padding:20px;background:linear-gradient(180deg,#fff5f7,#f4fbff);
        font-family:ui-rounded,"PingFang TC","Noto Sans TC",system-ui,-apple-system,sans-serif;color:#2b2f36}
@@ -20,7 +20,7 @@
 </style>
 </head>
 <body>
-  <h1 id="h1">九宮格看板</h1>
+  <h1 id="h1">🌸 九宮格看板</h1>
   <div class="card">
     <div class="title">
       <span class="pill" id="topicPill">主題</span>
@@ -28,17 +28,17 @@
     </div>
     <div class="grid" id="grid"></div>
   </div>
-  <div class="muted">此頁每 5 秒自動更新。🌟</div>
+  <div class="muted">此頁每 5 秒自動更新。</div>
 
 <script>
-  // 同一支 Apps Script Web App /exec
+  // ⛳ 同一支 Apps Script /exec
   const API_URL = 'https://script.google.com/macros/s/AKfycbwLIX201A97awOAKs9AH5J0z8W3_csE0FvkDoslK6mM8IHt1Rh0SUCBgOvan6eKSm0/exec';
 
   const sp = new URLSearchParams(location.search);
   const topic = sp.get('topic') || '未命名主題';
   const group = sp.get('group') || '1';
 
-  document.getElementById('h1').textContent = `護理臨床推理-九宮格看板：${topic}`;
+  document.getElementById('h1').textContent = `🌸 護理臨床推理 - 九宮格看板：${topic}`;
   document.getElementById('topicPill').textContent = `主題：${topic}`;
   document.getElementById('groupPill').textContent = `組別：${group}`;
   const gridEl = document.getElementById('grid');
@@ -55,7 +55,7 @@
     });
   }
 
-  function makeCell(txt, center=false){
+  function cell(txt, center=false){
     const d = document.createElement('div');
     d.className = 'cell' + (center?' center':'');
     d.textContent = center ? `🎯 ${topic}` : (txt||'…');
@@ -65,12 +65,10 @@
   async function load(){
     try{
       const url = `${API_URL}?action=getLatestGrid&topic=${encodeURIComponent(topic)}&group=${encodeURIComponent(group)}`;
-      const res = await jsonp(url);               // { ok:true, grid:[...] }
+      const res = await jsonp(url); // { ok:true, grid:[...] }
       const cells = (res && res.ok) ? res.grid : Array(9).fill('');
       gridEl.innerHTML = '';
-      for (let i=0;i<9;i++){
-        gridEl.appendChild(makeCell(i===4 ? `🎯 ${topic}` : (cells[i]||''), i===4));
-      }
+      for (let i=0;i<9;i++) gridEl.appendChild(cell(i===4 ? `🎯 ${topic}` : (cells[i]||''), i===4));
     }catch(e){ console.error(e); }
   }
   load();

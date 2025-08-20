@@ -1,91 +1,81 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><b>護理臨床推理~</b> 大家一起來賓果</title>
-  <style>
-    body {
-      font-family: "Noto Sans TC", sans-serif;
-      background: #fdf6f6;
-      text-align: center;
-      padding: 20px;
-    }
-    h1 {
-      color: #ff6b81;
-      font-size: 1.5em;
-      margin-bottom: 20px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      max-width: 400px;
-      margin: 0 auto;
-    }
-    .cell {
-      background: #fff;
-      border-radius: 15px;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-      padding: 20px;
-      font-size: 1.1em;
-      color: #333;
-      min-height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: 0.2s;
-    }
-    .cell.filled {
-      background: #ffe6eb;
-      border: 2px solid #ff6b81;
-      font-weight: bold;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>護理臨床推理-九宮格看板</title>
+<style>
+  body{margin:0;padding:20px;background:linear-gradient(180deg,#fff5f7,#f4fbff);
+       font-family:ui-rounded,"PingFang TC","Noto Sans TC",system-ui,-apple-system,sans-serif;color:#2b2f36}
+  h1{font-size:22px;margin:0 0 12px;text-align:center}
+  .card{max-width:560px;margin:0 auto;background:#fff;border-radius:18px;
+        border:2px solid #ffe0ec;box-shadow:0 12px 22px rgba(255,160,190,.18);padding:14px}
+  .title{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .pill{font-size:13px;padding:6px 12px;border-radius:999px;background:linear-gradient(90deg,#ffd9ec,#c7eeff);border:1px solid #ffd9ec}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+  .cell{min-height:78px;border:1px dashed #e6e8ee;border-radius:12px;background:#fffafd;
+        display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:18px;line-height:1.2}
+  .center{background:linear-gradient(180deg,#fff1f7,#eef9ff);border:2px solid #ff9ac2;font-weight:700}
+  .muted{color:#7a7f87;font-size:13px;text-align:center;margin-top:8px}
+</style>
 </head>
 <body>
-  <h1 id="topicTitle"><b>護理臨床推理~</b> 大家一起來賓果</h1>
-  <div class="grid" id="bingoGrid">
-    <!-- 動態生成 -->
+  <h1 id="h1">九宮格看板</h1>
+  <div class="card">
+    <div class="title">
+      <span class="pill" id="topicPill">主題</span>
+      <span class="pill" id="groupPill">組別</span>
+    </div>
+    <div class="grid" id="grid"></div>
   </div>
+  <div class="muted">此頁每 5 秒自動更新。🌟</div>
 
-  <script>
-    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwiG0HcGi6ZXqJ_DTTt-DGhQGizSC1TnNKGQwIJWwzebFslYqZr7U-qhj16wbNNa7vI/exec';
-    
-    // 取得網址參數 ?topic=血糖監測&group=1
-    const urlParams = new URLSearchParams(window.location.search);
-    const topic = urlParams.get("topic") || "未命名主題";
-    const group = urlParams.get("group") || "1";
-    document.getElementById("topicTitle").innerText = "主題：" + topic;
+<script>
+  // 同一支 Apps Script Web App /exec
+  const API_URL = 'https://script.google.com/macros/s/AKfycbz1TDzTGyg__isf33Jxx-aco8nG9Zbcxg2Aee0ABb0Sjm7kS5CcY5enmM1H-oMf3uAf/exec';
 
-    // 從後端抓取資料
-    async function loadGrid() {
-      try {
-        let res = await fetch(`${BACKEND_URL}?topic=${topic}&group=${group}`);
-        let data = await res.json();
+  const sp = new URLSearchParams(location.search);
+  const topic = sp.get('topic') || '未命名主題';
+  const group = sp.get('group') || '1';
 
-        const grid = document.getElementById("bingoGrid");
-        grid.innerHTML = "";
+  document.getElementById('h1').textContent = `護理臨床推理-九宮格看板：${topic}`;
+  document.getElementById('topicPill').textContent = `主題：${topic}`;
+  document.getElementById('groupPill').textContent = `組別：${group}`;
+  const gridEl = document.getElementById('grid');
 
-        for (let i = 0; i < 9; i++) {
-          let cell = document.createElement("div");
-          cell.className = "cell";
-          if (data[i]) {
-            cell.classList.add("filled");
-            cell.innerText = data[i];
-          } else {
-            cell.innerText = "等待填寫";
-          }
-          grid.appendChild(cell);
-        }
-      } catch (err) {
-        alert("載入失敗：" + err);
+  // JSONP 取得（避免 CORS）
+  function jsonp(url){
+    return new Promise((resolve, reject)=>{
+      const cb = 'cb_'+Date.now()+'_'+Math.floor(Math.random()*1000);
+      const s = document.createElement('script');
+      window[cb] = (data)=>{ resolve(data); delete window[cb]; s.remove(); };
+      s.onerror = ()=>{ reject(new Error('JSONP 載入失敗')); delete window[cb]; s.remove(); };
+      s.src = url + (url.includes('?')?'&':'?') + 'callback=' + cb;
+      document.body.appendChild(s);
+    });
+  }
+
+  function makeCell(txt, center=false){
+    const d = document.createElement('div');
+    d.className = 'cell' + (center?' center':'');
+    d.textContent = center ? `🎯 ${topic}` : (txt||'…');
+    return d;
+  }
+
+  async function load(){
+    try{
+      const url = `${API_URL}?action=getLatestGrid&topic=${encodeURIComponent(topic)}&group=${encodeURIComponent(group)}`;
+      const res = await jsonp(url);               // { ok:true, grid:[...] }
+      const cells = (res && res.ok) ? res.grid : Array(9).fill('');
+      gridEl.innerHTML = '';
+      for (let i=0;i<9;i++){
+        gridEl.appendChild(makeCell(i===4 ? `🎯 ${topic}` : (cells[i]||''), i===4));
       }
-    }
-
-    loadGrid();
-    // 每30秒更新一次
-    setInterval(loadGrid, 30000);
-  </script>
+    }catch(e){ console.error(e); }
+  }
+  load();
+  setInterval(load, 5000);
+</script>
 </body>
 </html>
+

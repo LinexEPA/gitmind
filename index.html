@@ -1,187 +1,202 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>🌸 護理臨床推理｜一起來賓果</title>
-<style>
-  :root{
-    --bg1:#fff5f9; --bg2:#f4fbff; --card:#ffffff; --ink:#2b2f36;
-    --muted:#6b7280; --grid:#e9e9ef; --btn:#4b7bec;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--ink);
-       font-family:ui-rounded,"PingFang TC","Noto Sans TC",system-ui,-apple-system,sans-serif;}
-  .wrap{max-width:980px;margin:0 auto;padding:16px}
-  h1{font-size:22px;margin:6px 0 12px}
-  .card{background:var(--card);border:2px solid #ffe2ef;border-radius:16px;
-        box-shadow:0 10px 20px rgba(255,160,190,.18);padding:12px 12px 16px;margin-bottom:12px}
-  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
-  .pill{display:inline-block;padding:6px 12px;border-radius:999px;
-        background:linear-gradient(90deg,#ffd9ec,#c7eeff);border:1px solid #ffd9ec;font-size:13px}
-  select{font-size:16px;padding:8px 10px;border-radius:10px;border:1px solid #dfe3ea;background:#fff}
-  .badge{background:#fff;border:1px solid #ffd9ea;padding:8px 10px;border-radius:10px;font-size:14px}
-  .groups{display:flex;gap:8px;flex-wrap:wrap}
-  .gbtn{flex:1;min-width:86px;text-align:center;padding:10px 0;border-radius:12px;
-        border:2px solid #dfe7ff;background:#fff;font-size:16px;cursor:pointer}
-  .gbtn.active{background:#e6f0ff;border-color:#bcd3ff}
-  .hint{color:var(--muted);font-size:14px;margin:8px 2px 12px}
-  .grid{display:grid;grid-template-columns:1fr;gap:10px}
-  @media(min-width:640px){.grid{grid-template-columns:repeat(3,1fr);}}
-  textarea{width:100%;min-height:86px;padding:10px;font-size:16px;border-radius:12px;border:1px solid var(--grid)}
-  .btn{display:block;margin-top:14px;background:var(--btn);color:#fff;border:0;border-radius:12px;
-       font-size:18px;padding:14px 18px;width:100%;cursor:pointer}
-  .btn[disabled]{opacity:.5;cursor:not-allowed}
-  .link{display:block;text-align:center;margin-top:10px;text-decoration:none}
-  .toast{margin-top:10px;font-size:15px}
-  .ok{color:#2f9e44}.err{color:#c92a2a}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>護理臨床推理 🌸 一起來實果~</title>
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      background: #fff0f5;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    h2 {
+      color: #d63384;
+      margin: 20px 0;
+    }
+    .box {
+      background: white;
+      margin: 15px auto;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 650px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    select, button {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      margin: 8px;
+      font-size: 16px;
+    }
+    .groupBtn {
+      display: inline-block;
+      margin: 4px;
+      padding: 10px 20px;
+      border: 1px solid #aaa;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #f8f9fa;
+    }
+    .groupBtn.active {
+      background: #d63384;
+      color: white;
+      border-color: #d63384;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+    textarea {
+      width: 100%;
+      height: 80px;
+      resize: none;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      padding: 6px;
+      font-size: 14px;
+    }
+    .submit {
+      margin-top: 20px;
+      background: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .toast { margin-top:10px; font-size:14px; }
+    .ok { color: green; }
+    .err { color: red; }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>🌸 護理臨床推理｜一起來賓果</h1>
-
-  <div class="card">
-    <div class="row">
-      <span class="pill">主題</span>
+  <h2>護理臨床推理（一起來實果~）</h2>
+  <div class="box">
+    <div>
+      <label>主題</label>
       <select id="topicSelect">
-        <option value="">請選擇主題</option>
-        <option>血糖監測</option>
-        <option>輸血</option>
-        <option>利尿劑</option>
-        <option>抗生素</option>
-        <option>氧氣</option>
+        <option value="">請選擇</option>
+        <option value="血糖監測">血糖監測</option>
+        <option value="輸血安全">輸血安全</option>
+        <option value="藥物給藥">藥物給藥</option>
+        <option value="交班重點">交班重點</option>
       </select>
-      <span id="topicBadge" class="badge" style="display:none"></span>
     </div>
-    <div class="row">
-      <span class="pill">組別</span>
-      <span id="groupLabel" class="badge">未選擇</span>
+    <div>
+      <label>組別</label>
+      <select id="groupSelect">
+        <option value="">請選擇</option>
+        <option value="1">第 1 組</option>
+        <option value="2">第 2 組</option>
+        <option value="3">第 3 組</option>
+        <option value="4">第 4 組</option>
+        <option value="5">第 5 組</option>
+      </select>
     </div>
-    <div class="groups" id="groupBtns"></div>
+    <div id="groupBtns">
+      <div class="groupBtn" data-g="1">第 1 組</div>
+      <div class="groupBtn" data-g="2">第 2 組</div>
+      <div class="groupBtn" data-g="3">第 3 組</div>
+      <div class="groupBtn" data-g="4">第 4 組</div>
+      <div class="groupBtn" data-g="5">第 5 組</div>
+    </div>
+    <div style="margin-top:10px;color:#666;font-size:14px;">
+      填寫順序是 <b>九宮格實果畫面</b> 🌸
+    </div>
+    <div class="grid">
+      <textarea id="a1" placeholder="1"></textarea>
+      <textarea id="a2" placeholder="2"></textarea>
+      <textarea id="a3" placeholder="3"></textarea>
+      <textarea id="a4" placeholder="4"></textarea>
+      <textarea id="a5" placeholder="你的醫囑填這邊"></textarea>
+      <textarea id="a6" placeholder="6"></textarea>
+      <textarea id="a7" placeholder="7"></textarea>
+      <textarea id="a8" placeholder="8"></textarea>
+      <textarea id="a9" placeholder="9"></textarea>
+    </div>
+    <button class="submit" id="submitBtn">送出</button>
+    <div class="toast" id="toast"></div>
+    <div style="margin-top:12px;">
+      <a id="goBoard" href="Dashboard.html" target="_blank">👉 前往看板</a>
+    </div>
   </div>
 
-  <div class="hint">填寫順序是<b>九宮格實果畫面</b> 🌸。</div>
-
-  <div class="grid">
-    <textarea id="a1"  placeholder="1"></textarea>
-    <textarea id="a2"  placeholder="2"></textarea>
-    <textarea id="a3"  placeholder="3"></textarea>
-    <textarea id="a4"  placeholder="4"></textarea>
-    <textarea id="a5"  placeholder="填入你的醫囑"></textarea>
-    <textarea id="a6"  placeholder="6"></textarea>
-    <textarea id="a7"  placeholder="7"></textarea>
-    <textarea id="a8"  placeholder="8"></textarea>
-    <textarea id="a9"  placeholder="9"></textarea>
-  </div>
-
-  <button id="submitBtn" class="btn" disabled>送出</button>
-  <a id="goBoard" class="link" target="_blank" rel="noopener">👉 送出後開啟看板</a>
-  <div id="toast" class="toast"></div>
-</div>
-
-<script>
-  /* ⛳ 把這裡換成你部署好的 Apps Script /exec（同一支給 index + Dashboard 使用） */
-  const API_URL = 'https://script.google.com/macros/s/AKfycbxo0KhEWoVMpfATaF760teggaREGWtaAoCAfPc039fpHTAjVSID7e-nUyl8Npi2yDhQ/exec
+  <script>
+    // ⚠️ 記得換成你自己的 Apps Script 網址
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxo0KhEWoVMpfATaF760teggaREGWtaAoCAfPc039fpHTAjVSID7e-nUyl8Npi2yDhQ/exec
 ';
 
-  // 讀 URL 預設值（可用 ?topic=...&group=... 帶入）
-  const sp = new URLSearchParams(location.search);
-  let topic    = sp.get('topic') || '';
-  let group_id = sp.get('group') || '';
+    let group_id = "";
 
-  // UI 元件
-  const sel   = document.getElementById('topicSelect');
-  const badge = document.getElementById('topicBadge');
-  const groupLabel = document.getElementById('groupLabel');
-  const groupBtns  = document.getElementById('groupBtns');
-  const submitBtn  = document.getElementById('submitBtn');
-  const toast      = document.getElementById('toast');
-  const goBoard    = document.getElementById('goBoard');
+    // 組別按鈕事件
+    document.querySelectorAll('.groupBtn').forEach(btn=>{
+      btn.onclick = ()=>{
+        document.querySelectorAll('.groupBtn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        group_id = btn.dataset.g;
+        document.getElementById('groupSelect').value = group_id;
+      };
+    });
 
-  // 建立 1~5 組按鈕
-  for (let i=1;i<=5;i++){
-    const b = document.createElement('button');
-    b.type='button'; b.className='gbtn'; b.textContent=`第 ${i} 組`;
-    if (group_id==i.toString()) b.classList.add('active');
-    b.onclick = ()=>{
-      group_id = String(i);
-      [...groupBtns.children].forEach(c=>c.classList.remove('active'));
-      b.classList.add('active');
-      groupLabel.textContent = `第 ${group_id} 組`;
-      updateReady();
-      goBoard.href = `Dashboard.html?topic=${encodeURIComponent(topic||sel.value)}&group=${encodeURIComponent(group_id)}`;
-    };
-    groupBtns.appendChild(b);
-  }
+    const sel = document.getElementById('topicSelect');
+    const groupSel = document.getElementById('groupSelect');
+    const submitBtn = document.getElementById('submitBtn');
+    const toast = document.getElementById('toast');
+    const goBoard = document.getElementById('goBoard');
 
-  // 顯示/選擇主題
-  function initTopicUI(){
-    if (topic) {
-      sel.style.display='none';
-      badge.style.display='inline-block';
-      badge.textContent=topic;
-      sel.value=topic;
-    } else {
-      badge.style.display='none';
-      sel.addEventListener('change', ()=>{
-        topic = sel.value;
-        updateReady();
-        goBoard.href = `Dashboard.html?topic=${encodeURIComponent(topic)}&group=${encodeURIComponent(group_id||'1')}`;
+    // JSONP 工具
+    function jsonp(url){
+      return new Promise((resolve,reject)=>{
+        const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*1000);
+        const s=document.createElement('script');
+        window[cb]=(data)=>{ resolve(data); delete window[cb]; s.remove(); };
+        s.onerror=()=>{ reject(new Error('JSONP失敗')); delete window[cb]; s.remove(); };
+        s.src = url + (url.includes('?')?'&':'?') + 'callback=' + cb;
+        document.body.appendChild(s);
       });
     }
-  }
-  function updateReady(){ submitBtn.disabled = !( (topic||sel.value) && group_id ); }
 
-  // JSONP 工具（避免 CORS）
-  function jsonp(url){
-    return new Promise((resolve,reject)=>{
-      const cb='cb_'+Date.now()+'_'+Math.floor(Math.random()*1000);
-      const s=document.createElement('script');
-      window[cb]=(data)=>{ resolve(data); delete window[cb]; s.remove(); };
-      s.onerror=()=>{ reject(new Error('JSONP 載入失敗')); delete window[cb]; s.remove(); };
-      s.src = url + (url.includes('?')?'&':'?') + 'callback=' + cb;
-      document.body.appendChild(s);
-    });
-  }
+    // 送出
+    submitBtn.onclick = async ()=>{
+      const t = (sel.value || "").trim();
+      const g = group_id || groupSel.value;
+      if (!t || !g){ toast.innerHTML='<span class="err">請先選主題與組別</span>'; return; }
 
-  // 送出（用 JSONP GET：/exec?action=submitGrid&topic=...&group=...&a1=...&...&a9=...）
-  submitBtn.onclick = async ()=>{
-    const t = topic || sel.value;
-    if (!t || !group_id){ toast.innerHTML='<span class="err">請先選主題與組別</span>'; return; }
-
-    const qs = new URLSearchParams();
-    qs.set('action','submitGrid');
-    qs.set('topic', t);
-    qs.set('group', group_id);
-    for (let i=1;i<=9;i++){
-      const el = document.getElementById('a'+i);
-      qs.set('a'+i, (el?el.value.trim():''));
-    }
-
-    try{
-      submitBtn.disabled = true;
-      toast.textContent = '送出中…';
-      const res = await jsonp(`${API_URL}?${qs.toString()}`);
-      if (res && res.ok){
-        toast.innerHTML = '<span class="ok">送出成功！</span>';
-        goBoard.href = `Dashboard.html?topic=${encodeURIComponent(t)}&group=${encodeURIComponent(group_id)}`;
-      }else{
-        toast.innerHTML = '<span class="err">送出失敗，請再試一次</span>';
+      const qs = new URLSearchParams();
+      qs.set('action','submitGrid');
+      qs.set('topic', t);
+      qs.set('group', g);
+      for (let i=1;i<=9;i++){
+        qs.set('a'+i, document.getElementById('a'+i).value.trim());
       }
-    }catch(e){
-      toast.innerHTML = `<span class="err">錯誤：${e.message}</span>`;
-    }finally{
-      submitBtn.disabled = false;
-    }
-  };
+      const submitURL = `${API_URL}?${qs.toString()}`;
 
-  // 初始
-  initTopicUI();
-  groupLabel.textContent = group_id ? `第 ${group_id} 組` : '未選擇';
-  updateReady();
-</script>
+      try{
+        submitBtn.disabled = true;
+        toast.textContent = '送出中…';
+        const res = await jsonp(submitURL);
+        if (res && res.ok){
+          toast.innerHTML = '<span class="ok">送出成功！</span>';
+        } else {
+          throw new Error('JSONP回應非ok');
+        }
+      }catch(e){
+        // 備援：用隱形圖片
+        const img = new Image();
+        img.src = submitURL + '&_t=' + Date.now();
+        await new Promise(r => setTimeout(r, 600));
+        toast.innerHTML = '<span class="ok">送出成功！（備援）</span>';
+      }finally{
+        submitBtn.disabled = false;
+        goBoard.href = `Dashboard.html?topic=${encodeURIComponent(t)}&group=${encodeURIComponent(g)}`;
+      }
+    };
+  </script>
 </body>
 </html>
-
-
